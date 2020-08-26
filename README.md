@@ -1,5 +1,3 @@
-# Granny-Assistant
-
 # Setting Up
 
 To install all dependencies run:
