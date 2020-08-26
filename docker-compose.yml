@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+    database_dev:
+        image: postgres
+        environment:
+            POSTGRES_PASSWORD: cyan
+            POSTGRES_USER: postgres
+            POSTGRES_DB: cyan
+        volumes:
+            - ./pgdata_dev:/var/lib/postgresql/data
+        ports:
+            - '5432:5432'
