@@ -90,19 +90,19 @@ class UserController {
 					.json({ message: 'Invalid old password!' });
 			}
 		}
-		const updated = {
+		const newValues = {
 			name:  req.body.name,
 			email: req.body.email,
 			password: req.body.password
 		};
 		
-		for (var propName in updated) { 
-			if (updated[propName] === null || updated[propName] === undefined) {
-				delete updated[propName];
+		for (var propName in newValues) { 
+			if (newValues[propName] === null || newValues[propName] === undefined) {
+				delete newValues[propName];
 			}
 		}
 
-		const { id, name, email } = await user.update(updated);
+		const { id, name, email } = await user.update(newValues);
 
 		return res.json({ id, name, email });
 	}
