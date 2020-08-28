@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/users', UserController.create);
 
-router.get('/users',  authMiddleware, UserController.index);
+router.get('/users', authMiddleware, UserController.index);
 
 router.put('/users', authMiddleware, UserController.update);
 

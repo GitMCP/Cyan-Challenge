@@ -2,11 +2,12 @@ version: "3.8"
 
 services:
     database_dev:
-        image: postgres
+        image: kartoza/postgis
         environment:
             POSTGRES_PASSWORD: cyan
             POSTGRES_USER: postgres
             POSTGRES_DB: cyan
+            ALLOW_IP_RANGE: 0.0.0.0/0
         volumes:
             - ./pgdata_dev:/var/lib/postgresql/data
         ports:

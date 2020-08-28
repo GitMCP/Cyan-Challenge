@@ -5,11 +5,11 @@ import HarvestRoutes from './HarvestRoutes';
 import FarmRoutes from './FarmRoutes';
 
 const routes = {
-	FarmRoutes,
-	HarvestRoutes,
-	MillRoutes,
-	SessionRoutes,
-	UserRoutes,
+  FarmRoutes,
+  HarvestRoutes,
+  MillRoutes,
+  SessionRoutes,
+  UserRoutes
 };
 
 export default routes;

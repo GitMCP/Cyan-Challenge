@@ -5,87 +5,103 @@ import sequelize from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 
 class MillController {
-	async index(req, res) {
-		const results = await Mill.findAll({where: {deleted_at: null}, order:[['id', 'ASC']], attributes: ['id', 'name', 'created_at'], include:  {model: User, as: 'author', attributes: ['id', 'name', 'email']}});
-		return res.json(results);
-	}
+  async index(req, res) {
+    const results = await Mill.findAll({
+      where: { deleted_at: null },
+      order: [['id', 'ASC']],
+      attributes: ['id', 'name', 'created_at'],
+      include: {
+        model: User,
+        as: 'author',
+        attributes: ['id', 'name', 'email']
+      }
+    });
+    return res.json(results);
+  }
 
-	async create(req, res) {
-		const schema = Yup.object().shape({
-			name: Yup.string().required('Please inform the mill name!'),
-		});
-		const validationErrors = [];
-		await schema.validate(req.body, { abortEarly: false }).catch(err => {
-			validationErrors.push(...err.errors);
-		});
-		if (!(await schema.isValid(req.body))) {
-			return res.status(400).json({ message: validationErrors });
-		}
+  async create(req, res) {
+    const schema = Yup.object().shape({
+      name: Yup.string().required('Please inform the mill name!')
+    });
+    const validationErrors = [];
+    await schema.validate(req.body, { abortEarly: false }).catch(err => {
+      validationErrors.push(...err.errors);
+    });
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ message: validationErrors });
+    }
 
-		const nameExists = await Mill.findOne({ where: { name: req.body.name }});
-		if (nameExists) {
-			return res.status(400).json({ error: 'There\'s already a mill with that name!' });
-		}
-		const { name } = req.body;
-		const author_id = req.userId;
-        
-		const { id } = await Mill.create({name, author_id});
-		return res.json({id, name});
-	}
+    const nameExists = await Mill.findOne({ where: { name: req.body.name } });
+    if (nameExists) {
+      return res
+        .status(400)
+        .json({ error: "There's already a mill with that name!" });
+    }
+    const { name } = req.body;
+    const author_id = req.userId;
 
-	async update(req, res) {
-		const { mill_id } = req.params;
-		const schema = Yup.object().shape({
-			name: Yup.string().required('Please inform the mill name!'),
-		});
-		const validationErrors = [];
-		await schema.validate(req.body, { abortEarly: false }).catch(err => {
-			validationErrors.push(...err.errors);
-		});
-		if (!(await schema.isValid(req.body))) {
-			return res.status(400).json({ message: validationErrors });
-		}
+    const { id } = await Mill.create({ name, author_id });
+    return res.json({ id, name });
+  }
 
-		const mill = await Mill.findByPk(mill_id);
+  async update(req, res) {
+    const { mill_id } = req.params;
+    const schema = Yup.object().shape({
+      name: Yup.string().required('Please inform the mill name!')
+    });
+    const validationErrors = [];
+    await schema.validate(req.body, { abortEarly: false }).catch(err => {
+      validationErrors.push(...err.errors);
+    });
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ message: validationErrors });
+    }
 
-		if(!mill){
-			return res.status(400).json({ error: 'Mill not found!' });
-		}
-		if(req.userId != mill.author_id){
-			return res.status(400).json({ error: 'Sorry, you are not this mill\'s author' });
-		}
+    const mill = await Mill.findByPk(mill_id);
 
-		if(req.body.name){
-			const nameExists = await Mill.findOne({ where: { name: req.body.name }});
-			if (nameExists && nameExists.id != mill_id) {
-				return res.status(400).json({ error: 'There\'s already a mill with that name!' });
-			}
-		}
-		
+    if (!mill) {
+      return res.status(400).json({ error: 'Mill not found!' });
+    }
+    if (req.userId != mill.author_id) {
+      return res
+        .status(400)
+        .json({ error: "Sorry, you are not this mill's author" });
+    }
 
-		const { id, name } = await mill.update({name: req.body.name});
+    if (req.body.name) {
+      const nameExists = await Mill.findOne({ where: { name: req.body.name } });
+      if (nameExists && nameExists.id != mill_id) {
+        return res
+          .status(400)
+          .json({ error: "There's already a mill with that name!" });
+      }
+    }
 
-		return res.json({ id, name });
-	}
+    const { id, name } = await mill.update({ name: req.body.name });
 
-	async delete(req, res) {
-		const { mill_id } = req.params;
-		const mill = await Mill.findByPk(mill_id);
+    return res.json({ id, name });
+  }
 
-		if(!mill){
-			return res.status(400).json({ error: 'Mill not found!' });
-		}
-		if(req.userId != mill.author_id){
-			return res.status(400).json({ error: 'Sorry, you are not this mill\'s author' });
-		}
-		
-		await mill.update({
-			name: `deleted:${mill.name}#${uuidv4()}`,
-			deleted_at: sequelize.fn('NOW'),
-		});
+  async delete(req, res) {
+    const { mill_id } = req.params;
+    const mill = await Mill.findByPk(mill_id);
 
-		return res.json({ message: 'Mill deleted!' });
-	}  
+    if (!mill) {
+      return res.status(400).json({ error: 'Mill not found!' });
+    }
+    if (req.userId != mill.author_id) {
+      return res
+        .status(400)
+        .json({ error: "Sorry, you are not this mill's author" });
+    }
+
+    await mill.update({
+      name: `deleted:${mill.name}#${uuidv4()}`,
+      deleted_at: sequelize.fn('NOW')
+    });
+
+    return res.json({ message: 'Mill deleted!' });
+  }
 }
 
 export default new MillController();

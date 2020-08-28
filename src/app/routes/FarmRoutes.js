@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/farms/:harvest_id', authMiddleware, FarmController.create);
 
-router.get('/farms/:harvest_id?',  authMiddleware, FarmController.index);
+router.get('/farms/:harvest_id?', authMiddleware, FarmController.index);
 
 router.put('/farms/:farm_id', authMiddleware, FarmController.update);
 

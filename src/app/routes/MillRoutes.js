@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/mills', authMiddleware, MillController.create);
 
-router.get('/mills',  authMiddleware, MillController.index);
+router.get('/mills', authMiddleware, MillController.index);
 
 router.put('/mills/:mill_id', authMiddleware, MillController.update);
 

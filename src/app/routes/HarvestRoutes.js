@@ -7,10 +7,14 @@ const router = express.Router();
 
 router.post('/harvests/:mill_id', authMiddleware, HarvestController.create);
 
-router.get('/harvests/:mill_id?',  authMiddleware, HarvestController.index);
+router.get('/harvests/:mill_id?', authMiddleware, HarvestController.index);
 
 router.put('/harvests/:harvest_id', authMiddleware, HarvestController.update);
 
-router.delete('/harvests/:harvest_id', authMiddleware, HarvestController.delete);
+router.delete(
+  '/harvests/:harvest_id',
+  authMiddleware,
+  HarvestController.delete
+);
 
 module.exports = router;
