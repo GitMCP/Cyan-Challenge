@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 class HarvestController {
 	async index(req, res) {
-		const results = await Harvest.findAll({attributes: ['id', 'code', 'created_at'], include:  [{model: Mill, as: 'ownerMill', attributes: ['id', 'name']}, {model: User, as: 'author', attributes: ['id', 'name', 'email']}]});
+		const results = await Harvest.findAll({where: {deleted_at: null}, order:[['id', 'ASC']], attributes: ['id', 'code', 'created_at'], include:  [{model: Mill, as: 'ownerMill', attributes: ['id', 'name']}, {model: User, as: 'author', attributes: ['id', 'name', 'email']}]});
 		return res.json(results);
 	}
 
@@ -28,13 +28,18 @@ class HarvestController {
 		if (!(await schema.isValid(req.body))) {
 			return res.status(400).json({ message: validationErrors });
 		}
-
+		
 		const codeExists = await Harvest.findOne({ where: { code: req.body.code }});
 		if (codeExists) {
 			return res.status(400).json({ error: 'There\'s already a Harvest with that code!' });
 		}
 		const { code, start_date, end_date } = req.body;
 		const { mill_id } = req.params;
+		const mill = await Mill.findByPk(mill_id);
+		if(!mill){
+			return res.status(400).json({ error: 'Mill not found!' });
+		}
+
 		const author_id = req.userId;
         
 		const { id } = await Harvest.create({code, start_date, end_date, mill_id, author_id});
@@ -76,11 +81,13 @@ class HarvestController {
 		if(req.userId != harvest.author_id){
 			return res.status(400).json({ error: 'Sorry, you are not this Harvest\'s author' });
 		}
-    
-		const codeExists = await Harvest.findOne({ where: { code: req.body.code }});
-		if (codeExists && codeExists.id != harvest_id) {
-			return res.status(400).json({ error: 'There\'s already a Harvest with that code!' });
+		if(req.body.code){
+			const codeExists = await Harvest.findOne({ where: { code: req.body.code }});
+			if (codeExists && codeExists.id != harvest_id) {
+				return res.status(400).json({ error: 'There\'s already a Harvest with that code!' });
+			}
 		}
+		
 		const newValues = {
 			code:  req.body.code,
 			mill_id: req.body.mill_id,

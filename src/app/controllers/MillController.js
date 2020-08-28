@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 class MillController {
 	async index(req, res) {
-		const results = await Mill.findAll({attributes: ['id', 'name', 'created_at'], include:  {model: User, as: 'author', attributes: ['id', 'name', 'email']}});
+		const results = await Mill.findAll({where: {deleted_at: null}, order:[['id', 'ASC']], attributes: ['id', 'name', 'created_at'], include:  {model: User, as: 'author', attributes: ['id', 'name', 'email']}});
 		return res.json(results);
 	}
 
@@ -55,11 +55,13 @@ class MillController {
 			return res.status(400).json({ error: 'Sorry, you are not this mill\'s author' });
 		}
 
-
-		const nameExists = await Mill.findOne({ where: { name: req.body.name }});
-		if (nameExists && nameExists.id != mill_id) {
-			return res.status(400).json({ error: 'There\'s already a mill with that name!' });
+		if(req.body.name){
+			const nameExists = await Mill.findOne({ where: { name: req.body.name }});
+			if (nameExists && nameExists.id != mill_id) {
+				return res.status(400).json({ error: 'There\'s already a mill with that name!' });
+			}
 		}
+		
 
 		const { id, name } = await mill.update({name: req.body.name});
 

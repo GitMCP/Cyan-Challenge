@@ -5,7 +5,7 @@ import sequelize from 'sequelize';
 
 class UserController {
 	async index(req, res) {
-		const results = await User.findAll({attributes: ['id', 'name', 'email', 'created_at'], where: { deleted_at : null}});
+		const results = await User.findAll({attributes: ['id', 'name', 'email', 'created_at'], where: { deleted_at : null}, order: [['id', 'ASC']]});
 		return res.json(results);
 	}
 
