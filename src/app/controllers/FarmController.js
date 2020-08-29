@@ -55,7 +55,6 @@ class FarmController {
     }
 
     const { code, name } = req.body;
-    console.log(name);
     const author_id = req.userId;
 
     const { id } = await Farm.create({ code, name, harvest_id, author_id });
