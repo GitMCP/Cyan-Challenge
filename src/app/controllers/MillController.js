@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import User from '../models/User';
 import sequelize from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
+import notify from '../jobs/Notify';
 
 class MillController {
   async index(req, res) {
@@ -41,6 +42,13 @@ class MillController {
     const author_id = req.userId;
 
     const { id } = await Mill.create({ name, author_id });
+
+    const register = {
+      user: (await User.findByPk(author_id)).name,
+      entity: 'mill: ' + name
+    };
+    notify(req.io, register);
+
     return res.json({ id, name });
   }
 

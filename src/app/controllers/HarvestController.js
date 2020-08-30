@@ -4,6 +4,7 @@ import User from '../models/User';
 import Mill from '../models/Mill';
 import sequelize from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
+import notify from '../jobs/Notify';
 
 class HarvestController {
   async index(req, res) {
@@ -63,6 +64,12 @@ class HarvestController {
       mill_id,
       author_id
     });
+
+    const register = {
+      user: (await User.findByPk(author_id)).name,
+      entity: 'harvest: ' + code
+    };
+    notify(req.io, register);
 
     return res.json(
       await Harvest.findByPk(id, {

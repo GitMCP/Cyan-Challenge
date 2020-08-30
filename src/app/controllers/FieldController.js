@@ -4,6 +4,7 @@ import User from '../models/User';
 import Field from '../models/Field';
 import sequelize from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
+import notify from '../jobs/Notify';
 
 class FieldController {
   async index(req, res) {
@@ -66,6 +67,11 @@ class FieldController {
     const author_id = req.userId;
 
     const { id } = await Field.create({ code, location, farm_id, author_id });
+    const register = {
+      user: (await User.findByPk(author_id)).name,
+      entity: 'field: ' + code
+    };
+    notify(req.io, register);
 
     return res.json(
       await Field.findByPk(id, {
