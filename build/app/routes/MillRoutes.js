@@ -1,4 +1,4 @@
-"use strict"; function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }var _MillController = require('../controllers/MillController'); var _MillController2 = _interopRequireDefault(_MillController);
+"use strict";"use strict"; function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }var _MillController = require('../controllers/MillController'); var _MillController2 = _interopRequireDefault(_MillController);
 var _auth = require('../middlewares/auth'); var _auth2 = _interopRequireDefault(_auth);
 
 const express = require('express');

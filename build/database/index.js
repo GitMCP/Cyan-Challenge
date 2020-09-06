@@ -1,4 +1,4 @@
-"use strict"; function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }var _sequelize = require('sequelize'); var _sequelize2 = _interopRequireDefault(_sequelize);
+"use strict";"use strict"; function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }var _sequelize = require('sequelize'); var _sequelize2 = _interopRequireDefault(_sequelize);
 var _User = require('../app/models/User'); var _User2 = _interopRequireDefault(_User);
 var _database = require('../config/database'); var _database2 = _interopRequireDefault(_database);
 var _Mill = require('../app/models/Mill'); var _Mill2 = _interopRequireDefault(_Mill);

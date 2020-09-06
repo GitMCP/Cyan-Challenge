@@ -2,10 +2,12 @@ import express from 'express';
 import http from 'http';
 import io from 'socket.io';
 import routes from './app/routes';
+import cors from 'cors';
 
 class App {
   constructor() {
     this.app = express();
+    this.app.use(cors());
     this.server = http.Server(this.app);
     this.socket();
     this.middlewares();
