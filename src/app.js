@@ -7,7 +7,10 @@ import cors from 'cors';
 class App {
   constructor() {
     this.app = express();
-    this.app.use(cors({ origin: 'http://localhost:3000' }));
+    this.app.use((req, res, next) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      next();
+    });
     this.server = http.Server(this.app);
     this.socket();
     this.middlewares();
