@@ -1,4 +1,4 @@
-"use strict";"use strict";module.exports = {
+"use strict";"use strict";"use strict";module.exports = {
   dialect: 'postgres',
   host: 'ec2-34-238-26-109.compute-1.amazonaws.com',
   username: 'lsssanlwrdweem',

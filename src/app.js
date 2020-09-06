@@ -7,7 +7,7 @@ import cors from 'cors';
 class App {
   constructor() {
     this.app = express();
-    this.app.use(cors());
+    this.app.use(cors({ origin: true }));
     this.server = http.Server(this.app);
     this.socket();
     this.middlewares();
