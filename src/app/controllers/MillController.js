@@ -7,8 +7,21 @@ import notify from '../jobs/Notify';
 
 class MillController {
   async index(req, res) {
+    const filters = req.body;
+    console.log(filters);
+    const where = {
+      id: filters.id ? filters.id : undefined,
+      name: filters.name ? filters.name : undefined
+    };
+
+    for (var propName in where) {
+      if (where[propName] === null || where[propName] === undefined) {
+        delete where[propName];
+      }
+    }
+
     const results = await Mill.findAll({
-      where: { deleted_at: null },
+      where: where,
       order: [['id', 'ASC']],
       attributes: ['id', 'name', 'created_at'],
       include: {
@@ -17,6 +30,14 @@ class MillController {
         attributes: ['id', 'name', 'email']
       }
     });
+
+    if (filters.author) {
+      const filtered = results.filter(
+        index => index.author.name == filters.author
+      );
+      return res.json(filtered);
+    }
+
     return res.json(results);
   }
 

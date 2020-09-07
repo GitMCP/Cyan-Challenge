@@ -5,19 +5,70 @@ import Mill from '../models/Mill';
 import sequelize from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import notify from '../jobs/Notify';
+import { Op } from 'sequelize';
 
 class HarvestController {
   async index(req, res) {
+    const filters = req.body;
+
+    var startDate = {};
+    if (filters.startDateFrom) {
+      startDate[Op.gte] = filters.startDateFrom;
+    }
+    if (filters.startDateTo) {
+      startDate[Op.lte] = filters.startDateTo;
+    }
+    var endDate = {};
+    if (filters.endDateFrom) {
+      endDate[Op.gte] = filters.endDateFrom;
+    }
+    if (filters.endDateTo) {
+      endDate[Op.lte] = filters.endDateTo;
+    }
+
+    const where = {
+      id: filters.id ? filters.id : undefined,
+      code: filters.code ? filters.code : undefined,
+      start_date:
+        filters.startDateFrom || filters.startDateTo ? startDate : undefined,
+      end_date: filters.endDateFrom || filters.endDateTo ? endDate : undefined
+    };
+
+    for (let propName in where) {
+      if (where[propName] === null || where[propName] === undefined) {
+        delete where[propName];
+      }
+    }
+
+    delete filters.startDateFrom;
+    delete filters.startDateTo;
+    delete filters.endDateFrom;
+    delete filters.endDateTo;
+
     const results = await Harvest.findAll({
-      where: { deleted_at: null },
+      where,
       order: [['id', 'ASC']],
-      attributes: ['id', 'code', 'created_at'],
+      attributes: ['id', 'code', 'start_date', 'end_date'],
       include: [
         { model: Mill, as: 'ownerMill', attributes: ['id', 'name'] },
         { model: User, as: 'author', attributes: ['id', 'name', 'email'] }
       ]
     });
-    return res.json(results);
+    if (!filters.author && !filters.ownerMill) {
+      return res.json(results);
+    }
+    var filtered = {};
+
+    if (filters.author) {
+      filtered = results.filter(index => index.author.name == filters.author);
+    }
+
+    if (filters.ownerMill) {
+      filtered = results.filter(
+        index => index.ownerMill.name == filters.ownerMill
+      );
+    }
+    return res.json(filtered);
   }
 
   async create(req, res) {

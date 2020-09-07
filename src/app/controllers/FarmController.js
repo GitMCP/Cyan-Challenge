@@ -8,9 +8,23 @@ import notify from '../jobs/Notify';
 
 class FarmController {
   async index(req, res) {
+    const filters = req.body;
+    console.log(filters);
+
+    const where = {
+      id: filters.id ? filters.id : undefined,
+      code: filters.code ? filters.code : undefined,
+      name: filters.name ? filters.name : undefined
+    };
+
+    for (var propName in where) {
+      if (where[propName] === null || where[propName] === undefined) {
+        delete where[propName];
+      }
+    }
     const results = await Farm.findAll({
-      where: { deleted_at: null },
-      attributes: ['id', 'code', 'name', 'created_at'],
+      where: where,
+      attributes: ['id', 'code', 'name'],
       order: [['id', 'ASC']],
       include: [
         {
@@ -25,7 +39,21 @@ class FarmController {
         }
       ]
     });
-    return res.json(results);
+    if (!filters.author && !filters.ownerHarvest) {
+      return res.json(results);
+    }
+    var filtered = {};
+
+    if (filters.author) {
+      filtered = results.filter(index => index.author.name == filters.author);
+    }
+
+    if (filters.ownerHarvest) {
+      filtered = results.filter(
+        index => index.ownerHarvest.name == filters.ownerHarvest
+      );
+    }
+    return res.json(filtered);
   }
 
   async create(req, res) {

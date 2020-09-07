@@ -8,8 +8,22 @@ import notify from '../jobs/Notify';
 
 class FieldController {
   async index(req, res) {
+    const filters = req.body;
+    console.log(filters);
+
+    const where = {
+      id: filters.id ? filters.id : undefined,
+      code: filters.code ? filters.code : undefined,
+      location: filters.location ? filters.location : undefined
+    };
+
+    for (var propName in where) {
+      if (where[propName] === null || where[propName] === undefined) {
+        delete where[propName];
+      }
+    }
     const results = await Field.findAll({
-      where: { deleted_at: null },
+      where: where,
       attributes: ['id', 'code', 'location'],
       order: [['id', 'ASC']],
       include: [
@@ -25,7 +39,21 @@ class FieldController {
         }
       ]
     });
-    return res.json(results);
+    if (!filters.author && !filters.ownerFarm) {
+      return res.json(results);
+    }
+    var filtered = {};
+
+    if (filters.author) {
+      filtered = results.filter(index => index.author.name == filters.author);
+    }
+
+    if (filters.ownerFarm) {
+      filtered = results.filter(
+        index => index.ownerFarm.name == filters.ownerFarm
+      );
+    }
+    return res.json(filtered);
   }
 
   async create(req, res) {

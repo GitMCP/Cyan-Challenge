@@ -5,9 +5,9 @@ const express = require('express');
 
 const router = express.Router();
 
-router.post('/fields/:farm_id', authMiddleware, FieldController.create);
+router.post('/fields/filter', authMiddleware, FieldController.index);
 
-router.get('/fields/:farm_id?', authMiddleware, FieldController.index);
+router.post('/fields/:farm_id', authMiddleware, FieldController.create);
 
 router.put('/fields/:field_id', authMiddleware, FieldController.update);
 

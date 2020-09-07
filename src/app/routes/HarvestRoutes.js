@@ -5,9 +5,8 @@ const express = require('express');
 
 const router = express.Router();
 
+router.post('/harvests/filter', authMiddleware, HarvestController.index);
 router.post('/harvests/:mill_id', authMiddleware, HarvestController.create);
-
-router.get('/harvests/:mill_id?', authMiddleware, HarvestController.index);
 
 router.put('/harvests/:harvest_id', authMiddleware, HarvestController.update);
 

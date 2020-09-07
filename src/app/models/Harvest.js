@@ -10,7 +10,9 @@ class Harvest extends Model {
         deleted_at: DataTypes.DATE
       },
       {
-        sequelize
+        sequelize,
+        paranoid: true,
+        deletedAt: 'deleted_at'
       }
     );
   }
