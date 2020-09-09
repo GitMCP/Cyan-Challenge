@@ -12,8 +12,7 @@ Make sure to leave this command running
 
 Then, open a second terminal and run:
 ```sh
-yarn knex migrate:latest
-yarn knex seed:run
+yarn sequelize db:migrate
 ```
 Run the NodeJS server by running:
 ```sh
@@ -34,9 +33,8 @@ To create an user send a ``` POST ``` request to ``` http://localhost:3333/users
 The request body should contain the following:
 ```
 {
-    "name": "Assistant", //Your name, must be a String
-    "email": "Assistant@email.com", //Your e-mail, must be a String in an email format and must be unique
-    "type": "pacient", //The type of user you're creating, must be a string containing either "pacient", or "medic"
+    "name": "Gustavo", //Your name, must be a String
+    "email": "Gustavo@email.com", //Your e-mail, must be a String in an email format and must be unique
     "password": "Senha@123", //Your password, must have at least 8 digits, contain a lower case, an upper case and a special character
     "confirmPassword": "Senha@123" //Must be exactly equal the previous field
 }
@@ -68,9 +66,8 @@ The request must contain an authentication header with:
 The request body may contain the following:
 ```
 {
-    "name": "Assistant", //Your name, must be a String
-    "email": "Assistant@email.com", //Your e-mail, must be a String in an email format and must be unique
-    "type": "pacient", //The type of user you're creating, must be a string containing either "pacient", or "medic"
+    "name": "Gustavo", //Your name, must be a String
+    "email": "Gustavo@email.com", //Your e-mail, must be a String in an email format and must be unique
     "password": "Senha@123", //Your password, must have at least 8 digits, contain a lower case, an upper case and a special character
     "confirmPassword": "Senha@123" //Must be exactly equal the previous field
 }
@@ -101,31 +98,21 @@ This  route is used for authentication
 
 To login in the API send a ```POST``` request to ```http://localhost:3333/login```
 
-The request body should contain the following: 
+The request body should contain the following:
 ```
 {
-    "email": "Assistant@email.com", //Your e-mail
+    "email": "Gustavo@email.com", //Your e-mail
     "password": "Senha@123" //Your password
 }
 ```
 The API shall return your user information, as well as an unique token, that you'll use to get access to the authenticated routes
 
-# Medicines
+# Mills
 
-### List Medicines
+### List Mills
 This route requires authentication, see [Login](#login)
 
-To list all medicines send a ```GET``` request to ``` http://localhost:3333/medicines ```
-
-The request must contain an authentication header with:
-```
-    Bearer [Your authentication token]
-```
-
-### Create Medicine
-This route requires authentication, see [Login](#login)
-
-To create an medicine send a ```POST``` request to ``` http://localhost:3333/medicines ```
+To list all mills send a ```POST``` request to ``` http://localhost:3333/mills ```
 
 The request must contain an authentication header with:
 ```
@@ -134,19 +121,38 @@ The request must contain an authentication header with:
 The request body may contain the following:
 ```
 {
-    "name": "Aspirin", //The medicine name, must be a String
-    "category": "OTC", //The medicine category, must be one of the following: ['OTC', 'POM', 'CD']
-    "type": "tablet", //The type of the medicine, must be one of the following: ['liquid', 'tablet', 'capsule', 'injection']
+    "id": "1", //The ID of the Mill you're looking for
+    "name": "Mill01", //The name of the Mill you're looking for
+    "author": "Gustavo", //The author of the Mill you're looking for
+}
+```
+There are no mandatory parameters in this request
+
+### Create Mill
+This route requires authentication, see [Login](#login)
+
+To create a mill send a ```POST``` request to ``` http://localhost:3333/mills ```
+
+The request must contain an authentication header with:
+```
+    Bearer [Your authentication token]
+```
+The request body may contain the following:
+```
+{
+    "name": "Mill01", //The mill name, must be a String
 }
 ```
 Keep in mind that all parameters are mandatory in this request
 
-The API shall return the medicine's information as a confirmation of success
+The API shall return the mill's information as a confirmation of success
 
-### Update Medicine
+### Update Mill
 This route requires authentication, see [Login](#login)
 
-To update a medicine send a ```PUT``` request to ``` http://localhost:3333/medicines```
+To update a mill send a ```PUT``` request to ``` http://localhost:3333/mills/:id```
+
+Change the ```:id``` in the URL by the ID of the mill you want to update
 
 The request must contain an authentication header with:
 ```
@@ -155,47 +161,60 @@ The request must contain an authentication header with:
 The request body may contain the following:
 ```
 {
-    "id": "1", //The ID of the medicine that will be updated
-    "name": "Aspirin", //The new name of the medicine
-    "category": "OTC", //The medicine category, must be one of the following: ['OTC', 'POM', 'CD']
-    "type": "tablet", //The type of the medicine, must be one of the following: ['liquid', 'tablet', 'capsule', 'injection']
+    "name": "Mill01", //The new name of the mill
 }
 ```
-The API shall return all the updated information from the medicine as a confirmation of success
+The API shall return all the updated information from the mill as a confirmation of success
 
-### Delete Medicine
+Keep in mind that you can only update mills created by you
+
+### Delete Mill
 This route requires authentication, see [Login](#login)
 
-To delete a medicine send a ```DELETE``` request to ``` http://localhost:3333/medicines ```
+To delete a medicine send a ```DELETE``` request to ``` http://localhost:3333/medicines/:id ```
+
+Change the ```:id``` in the URL by the ID of the mill you want to delete
 
 The request must contain an authentication header with:
 ```
     Bearer [Your authentication token]
-```
-The request body should contain the following:
-```
-{
-    "id": "1", //The ID of the medicine that will be deleted
-}
 ```
 The API shall return the information of the deleted medicine as a confirmation of success
 
-# Prescriptions
+Keep in mind that you can only delete mills created by you
 
-### List Prescriptions
+# Harvests
+
+### List Harvests
 This route requires authentication, see [Login](#login)
 
-To list all prescriptions send a ```GET``` request to ``` http://localhost:3333/prescriptions ```
+To list all harvests send a ```POST``` request to ``` http://localhost:3333/harvests/filter ```
 
 The request must contain an authentication header with:
 ```
     Bearer [Your authentication token]
 ```
+The request body may contain the following:
+```
+{
+    "id": "1", //The ID of the Harvest you're looking for
+    "code": "H01", //The code of the Harvest you're looking for
+    "startDateFrom": "09/09/2020", //Look for Harvests starting after this date
+    "startDateTo": "09/09/2020", //Look for Harvests starting before this date
+    "endDateFrom": "09/09/2020", //Look for Harvests ending after this date
+    "endDateTo": "09/09/2020", //Look for Harvests ennding before this date
+    "ownerMill": "Mill01", //The name of the Mill that own's the Harvests you're looking for
+    "author": "Gustavo", //The author of the Harvest you're looking for
+}
+```
+There are no mandatory parameters in this request
 
-### Create Prescription
+### Create Harvest
 This route requires authentication, see [Login](#login)
 
-To create a prescription send a ```POST``` request to ``` http://localhost:3333/prescriptions ```
+To create a harvest send a ```POST``` request to ``` http://localhost:3333/harvests/:mill_id ```
+
+Change the ```:mill_id``` in the URL by the ID of the mill that own's your harvest
 
 The request must contain an authentication header with:
 ```
@@ -204,23 +223,22 @@ The request must contain an authentication header with:
 The request body must contain the following:
 ```
 {
-    "pacientEmail": "Assistant@email.com", //The email of the pacient for the prescription, must be a string
-    "medicineName": "Aspirin", //The name of the prescripted medicine, must be a string
-    "treatmentStart": "01/01/2020 08:00:00", //The treatment start date, must be a date formatted string
-    "dosage": "1 tablet", //The medicine dosage, must be a string
-    "totalDoses": "6", //The total number of doses taken during treatment
-    "dosageInterval": "8", //The interval, in hours, between doses
+    "code": "H01", //The harvest code, must be a string
+    "start_date": "01/01/2020", //The harvest start date, must be a date formatted string
+    "end_date": "01/01/2020", //The harvest end date, must be a date formatted string
 }
 ```
 Keep in mind that all parameters are mandatory in this request
 
 The API shall return the prescription's information as a confirmation of success
 
-### Update Prescription
+### Update Harvest
 
 This route requires authentication, see [Login](#login)
 
-To update a prescription send a ```PUT``` request to ``` http://localhost:3333/prescriptions```
+To update a prescription send a ```PUT``` request to ``` http://localhost:3333/harvest/:id```
+
+Change the ```:id``` in the URL by the ID of the harvest you want to update
 
 The request must contain an authentication header with:
 ```
@@ -229,15 +247,14 @@ The request must contain an authentication header with:
 The request body may contain the following:
 ```
 {
-    "prescriptionId": "1", //The ID of the prescription that will be updated
-    "pacientEmail": "Assistant@email.com", //The email of the pacient for the prescription, must be a string
-    "medicineName": "Aspirin", //The name of the prescripted medicine, must be a string
-    "treatmentStart": "01/01/2020 08:00:00", //The treatment start date, must be a date formatted string
-    "dosage": "1 tablet", //The medicine dosage, must be a string
-    "totalDoses": "6", //The total number of doses taken during treatment
-    "dosageInterval": "8", //The interval, in hours, between doses
+    "code": "H01", //The harvest code, must be a string
+    "mill_id": "1", //The ID of the new owner Mill for your harvest
+    "start_date": "01/01/2020", //The harvest start date, must be a date formatted string
+    "end_date": "01/01/2020", //The harvest end date, must be a date formatted string
 }
 ```
+There are no mandatory parameters in this request
+
 The API shall return all the updated information from the prescription as a confirmation of success
 
 ### Delete Prescription
